@@ -1,7 +1,7 @@
 package fr.oz.zoo_api.model;
 import lombok.Getter;
 import lombok.Setter;
-import org.checkerframework.common.aliasing.qual.Unique;
+
 import org.hibernate.annotations.Type;
 
 import java.time.LocalDate;
@@ -33,7 +33,7 @@ public class Personnels {
     private String prenom;
 
 
-    @Column(name = "secu", unique = true)
+    @Column(name = "secu")
     private Long secu;
 
     private LocalDate naissance;
