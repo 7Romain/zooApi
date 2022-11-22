@@ -27,7 +27,7 @@ public class PersonnelsController {
     }
 
     @PostMapping("/api/personnels")
-    @ApiResponses(value = {@ApiResponse(responseCode = "400 : Created", description = "L'employé a bien été créé."), @ApiResponse( responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide." )})
+    @ApiResponses(value = {@ApiResponse(responseCode = "201 : Created", description = "L'employé a bien été créé."), @ApiResponse( responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide." )})
     public ResponseEntity<Personnels> creerPersonnels(@RequestBody Personnels personnels){
         try {
             Personnels reponse = personnelsService.savePersonnels(personnels);

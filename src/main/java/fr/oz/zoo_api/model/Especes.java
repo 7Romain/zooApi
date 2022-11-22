@@ -1,6 +1,8 @@
 package fr.oz.zoo_api.model;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 
@@ -21,6 +23,9 @@ public class Especes {
 
     private Boolean dangereux;
 
-    private String enclos;
+    @ManyToOne
+    @JoinColumn(name = "enclos")
+    @Fetch(FetchMode.JOIN)
+    private Enclos enclos;
 
 }

@@ -1,26 +1,20 @@
 package fr.oz.zoo_api.model;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
-
 import org.hibernate.annotations.Type;
-
 import java.time.LocalDate;
 import java.util.Objects;
-
 import javax.persistence.*;
-
-
 
 @Entity
 @Getter
 @Setter
 @Table(name ="personnels")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @org.hibernate.annotations.TypeDef(name = "Fonction", typeClass = PostgreSQLEnumType.class)
 
 public class Personnels {
-
-
-
 
 
     @Id

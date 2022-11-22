@@ -1,24 +1,35 @@
 package fr.oz.zoo_api.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "evenements")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Evenements {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_evenement")
     private Long id;
 
-    @Column(name ="id_personnel")
-    private Long idPersonnel;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name ="id_personnel")
+    @Fetch(FetchMode.JOIN)
+    private Personnels personnel;
 
-    @Column(name ="id_enclos")
-    private String idEnclos;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name ="id_enclos")
+    @Fetch(FetchMode.JOIN)
+    private Enclos enclos;
 
     @Column(name ="id_espece")
     private String idEspece;
@@ -30,5 +41,7 @@ public class Evenements {
     private String idTypeEvenement;
 
     private String observations;
+
+    private LocalDateTime moment;
 
 }

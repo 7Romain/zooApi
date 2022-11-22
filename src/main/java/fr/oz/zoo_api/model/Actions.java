@@ -1,9 +1,12 @@
 package fr.oz.zoo_api.model;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -15,11 +18,15 @@ public class Actions {
     @Column(name = "id_action")
     private Long id;
 
-    @Column(name ="id_personnel")
-    private Long idPersonnel;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name ="id_personnel")
+    @Fetch(FetchMode.JOIN)
+    private Personnels personnel;
 
-    @Column(name ="id_enclos")
-    private String idEnclos;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name ="id_enclos")
+    @Fetch(FetchMode.JOIN)
+    private Enclos enclos;
 
     @Column(name ="id_espece")
     private String idEspece;
@@ -28,7 +35,7 @@ public class Actions {
     private String idAnimal;
 
     @Column(name ="date_prevue")
-    private LocalDate datePrevue;
+    private LocalDateTime datePrevue;
 
     private String observations;
 
