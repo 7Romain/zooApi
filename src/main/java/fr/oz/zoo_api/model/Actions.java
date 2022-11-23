@@ -1,5 +1,6 @@
 package fr.oz.zoo_api.model;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 @Table(name = "actions")
 public class Actions {
     @Id
@@ -39,4 +41,7 @@ public class Actions {
 
     private String observations;
 
+    public Actions(String idEspece) {
+        this.idEspece = idEspece;
+    }
 }

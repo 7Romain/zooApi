@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -32,6 +33,7 @@ public class EspecesController {
     private ActionsService actionsService;
 
     @GetMapping("/api/especes")
+    @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
     @ApiResponses(value = {@ApiResponse(responseCode = "200 : OK", description = "La liste des espèces a bien été récupérée et est retransmise dans le corps du message."),
             @ApiResponse( responseCode = "404 : Not Found", description = "Le serveur n'a pas trouvé la liste des espèces" )})
     public ResponseEntity<Iterable<Especes>> getEspeces(){
@@ -46,6 +48,7 @@ public class EspecesController {
     }
 
     @PostMapping("/api/especes/rentrer")
+    @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
     @ApiResponses(value = {@ApiResponse(responseCode = "201 : Created", description = "L'especes est à l'intérieur."),
             @ApiResponse( responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide." )})
 
@@ -106,6 +109,7 @@ public class EspecesController {
         }
     }
     @PostMapping("/api/especes/sortir")
+    @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
     @ApiResponses(value = {@ApiResponse(responseCode = "201 : Created", description = "L'especes est à l'intérieur."),
             @ApiResponse( responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide." )})
 
@@ -171,6 +175,7 @@ public class EspecesController {
     }
 
     @PostMapping("/api/especes/nourrir")
+    @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
     @ApiResponses(value = {@ApiResponse(responseCode = "201 : Created", description = "L'especes est à l'intérieur."),
             @ApiResponse( responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide." )})
     public ResponseEntity<Evenements> nourrirEspece(@RequestBody RequeteIOEspece requeteIOEspece){
@@ -191,6 +196,7 @@ public class EspecesController {
         }
     }
     @PostMapping("/api/especes/stimuler")
+    @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
     @ApiResponses(value = {@ApiResponse(responseCode = "201 : Created", description = "L'especes est à l'intérieur."),
             @ApiResponse( responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide." )})
     public ResponseEntity<Evenements> stimulerEspece(@RequestBody RequeteIOEspece requeteIOEspece){

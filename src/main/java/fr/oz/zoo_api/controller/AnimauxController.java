@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +27,7 @@ public class AnimauxController {
     private EvenementsService evenementsService;
 
     @PostMapping("/api/animaux/entrer")
+    @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
     @ApiResponses(value = {@ApiResponse(responseCode = "201 : Created", description = "L'animal est à l'intérieur."),
             @ApiResponse( responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide." )})
 
@@ -51,6 +53,7 @@ public class AnimauxController {
        }
     }
     @PostMapping("/api/animaux/sortir")
+    @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
     @ApiResponses(value = {@ApiResponse(responseCode = "201 : Created", description = "L'animal est à l'intérieur."),
             @ApiResponse( responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide." )})
     public ResponseEntity<Evenements> sortirAnimal(@RequestBody RequeteIOAnimaux requeteAnimal){
@@ -77,6 +80,7 @@ public class AnimauxController {
     @PostMapping("/api/animaux/soigner")
     @ApiResponses(value = {@ApiResponse(responseCode = "201 : Created", description = "L'eclos a été vérifié."),
             @ApiResponse( responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide." )})
+    @PreAuthorize("hasRole('VETO')")
     public ResponseEntity<Evenements> soignerAnimal(@RequestBody Evenements evenement){
         try {
             evenement.setIdTypeEvenement("soins");

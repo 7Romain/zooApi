@@ -26,6 +26,7 @@ class ZooApiApplicationTests {
 
 	/**
 	 * *Test si la connection à la base fonctionne
+	 * pas besoin d'être log
 	 * @throws IOException
 	 */
 	@Test
@@ -42,8 +43,38 @@ class ZooApiApplicationTests {
 		assertEquals(expected,status);
 		con.disconnect();
 
+	}
+	@Test
+ void testGetEspecesSansAuthentif() throws IOException {
+
+		URL url = new URL ("http://localhost:9003/api/especes");
+		HttpURLConnection con = (HttpURLConnection) url.openConnection();
+		con.setRequestMethod("GET");
+		con.setRequestProperty("Content-Type", "application/json");
+		con.connect();
+		int status = con.getResponseCode();
+		System.out.println(status);
+		int expected = 401;
+		assertEquals(expected,status);
+		con.disconnect();
 
 	}
+//	@Test
+// void testAuthentifSoigneur() throws IOException {
+//
+//		URL url = new URL ("http://localhost:9003/api/auth/signin");
+//		HttpURLConnection con = (HttpURLConnection) url.openConnection();
+//		con.setRequestMethod("POST");
+//		con.setRequestProperty("Content-Type", "application/json");
+//		con.connect();
+//		int status = con.getResponseCode();
+//		System.out.println(status);
+//		int expected = 401;
+//		assertEquals(expected,status);
+//		con.disconnect();
+//
+//	}
+
 
 
 

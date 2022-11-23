@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,9 +17,7 @@ public class PersonnelsController {
 
 
     @GetMapping("/api/personnels")
-
-
-    public ResponseEntity<Iterable<Personnels>> getPersonnels(){
+        public ResponseEntity<Iterable<Personnels>> getPersonnels(){
         Iterable<Personnels> reponse =  personnelsService.getPersonnels();
         if(reponse == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -27,6 +26,7 @@ public class PersonnelsController {
     }
 
     @PostMapping("/api/personnels")
+    @PreAuthorize("hasRole('VETO')")
     @ApiResponses(value = {@ApiResponse(responseCode = "201 : Created", description = "L'employé a bien été créé."), @ApiResponse( responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide." )})
     public ResponseEntity<Personnels> creerPersonnels(@RequestBody Personnels personnels){
         try {
