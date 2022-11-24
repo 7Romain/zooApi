@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import fr.oz.zoo_api.model.Personnels;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.json.JSONObject;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,7 +31,8 @@ class ZooApiApplicationTests {
 	 * @throws IOException
 	 */
 	@Test
- void testGetPersonnels() throws IOException {
+	@DisplayName("Test la connection à la base de données")
+	void testGetPersonnels() throws IOException {
 
 		URL url = new URL ("http://localhost:9003/api/personnels");
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -45,6 +47,7 @@ class ZooApiApplicationTests {
 
 	}
 	@Test
+	@DisplayName("Test le besoin d'être authentifié pour accèder à la ressource liste des espèces ")
  void testGetEspecesSansAuthentif() throws IOException {
 
 		URL url = new URL ("http://localhost:9003/api/especes");

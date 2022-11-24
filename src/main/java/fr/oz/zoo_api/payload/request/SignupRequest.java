@@ -2,6 +2,8 @@ package fr.oz.zoo_api.payload.request;
 
 
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.validation.constraints.*;
 
@@ -34,7 +36,14 @@ public class SignupRequest {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+     Pattern regexPattern = Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$");
+     Matcher matcher = regexPattern.matcher(email);
+     if(matcher.matches()) {
+
+         this.email = email;
+     }else{
+         this.email = "invalide";
+     }
     }
 
     public String getPassword() {

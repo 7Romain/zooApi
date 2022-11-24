@@ -13,6 +13,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.context.annotation.Configuration;
@@ -40,7 +41,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
         prePostEnabled =true,
         securedEnabled = true
 )
-public class SpringSecurityConfig  {
+public class SpringSecurityConfig extends GlobalMethodSecurityConfiguration {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
