@@ -37,7 +37,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+//@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
+//@CrossOrigin(originPatterns = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/auth")
 @Validated
@@ -56,8 +57,7 @@ public class AuthController {
 
     @Autowired
     JwtUtils jwtUtils;
-
-
+    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -78,7 +78,7 @@ public class AuthController {
                 .body(new UserInfoResponse(userDetails.getId(),
                         userDetails.getUsername(),
                         userDetails.getEmail(),
-                        roles));
+                        roles) );
     }
     @PreAuthorize("hasRole('VETO')")
     @PostMapping("/signup")

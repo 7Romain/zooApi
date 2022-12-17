@@ -1,23 +1,29 @@
 package fr.oz.zoo_api.controller;
 
-import fr.oz.zoo_api.model.*;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import fr.oz.zoo_api.model.Actions;
+import fr.oz.zoo_api.model.Enclos;
+import fr.oz.zoo_api.model.Especes;
+import fr.oz.zoo_api.model.Evenements;
+import fr.oz.zoo_api.model.Personnels;
+import fr.oz.zoo_api.model.RequeteIOEspece;
 import fr.oz.zoo_api.service.ActionsService;
 import fr.oz.zoo_api.service.AnimauxService;
 import fr.oz.zoo_api.service.EspecesService;
 import fr.oz.zoo_api.service.EvenementsService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-
 
 @RestController
 public class EspecesController {
@@ -34,54 +40,56 @@ public class EspecesController {
 
     @GetMapping("/api/especes")
     @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200 : OK", description = "La liste des espèces a bien été récupérée et est retransmise dans le corps du message."),
-            @ApiResponse( responseCode = "404 : Not Found", description = "Le serveur n'a pas trouvé la liste des espèces" )})
-    public ResponseEntity<Iterable<Especes>> getEspeces(){
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200 : OK", description = "La liste des espèces a bien été récupérée et est retransmise dans le corps du message."),
+            @ApiResponse(responseCode = "404 : Not Found", description = "Le serveur n'a pas trouvé la liste des espèces") })
+    public ResponseEntity<Iterable<Especes>> getEspeces() {
         try {
             Iterable<Especes> reponse = especesService.getEspeces();
             return new ResponseEntity<>(reponse, HttpStatus.OK);
-        }catch(Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
+        }
 
     }
 
     @PostMapping("/api/especes/rentrer")
     @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
-    @ApiResponses(value = {@ApiResponse(responseCode = "201 : Created", description = "L'especes est à l'intérieur."),
-            @ApiResponse( responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide." )})
+    @ApiResponses(value = { @ApiResponse(responseCode = "201 : Created", description = "L'especes est à l'intérieur."),
+            @ApiResponse(responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide.") })
 
-
-    public ResponseEntity<Evenements> rentrerEspece(@RequestBody RequeteIOEspece requeteIIO){
+    public ResponseEntity<Evenements> rentrerEspece(@RequestBody RequeteIOEspece requeteIIO) {
 
         List<String> idAnimaux = requeteIIO.getIdAnimaux();
         Personnels personne = requeteIIO.getPersonne();
         String idEspece = requeteIIO.getIdEspece();
         Evenements evenement = new Evenements();
 
-        if ( !idAnimaux.isEmpty() ) {
+        if (!idAnimaux.isEmpty()) {
             String tableau = String.join(", ", idAnimaux);
-            String exception = tableau  + " toujours dehors.";
+            String exception = tableau + " toujours dehors.";
             if (!requeteIIO.getObservations().isEmpty()) {
-                exception = exception + " // " + requeteIIO.getObservations();}
+                exception = exception + " // " + requeteIIO.getObservations();
+            }
             evenement.setObservations(exception);
-        }else{
-        if (!requeteIIO.getObservations().isEmpty()) {
-            evenement.setObservations(requeteIIO.getObservations());}}
+        } else {
+            if (!requeteIIO.getObservations().isEmpty()) {
+                evenement.setObservations(requeteIIO.getObservations());
+            }
+        }
         evenement.setIdEspece(idEspece);
         evenement.setIdTypeEvenement("entree");
         evenement.setPersonnel(personne);
         evenement.setEnclos(especesService.trouverEnclos(idEspece));
         try {
-            if (!idAnimaux.isEmpty()  ) {
-            animauxService.rentrerToutLesAnimauxSauf(idEspece, idAnimaux);
-            /*
-            *création d'un évenement pour chaque animal qui est resté dehors
-            *   et prévoit une action de vérification
-            */
-                for (String animal: idAnimaux
-                     ) { Evenements evenementException = new Evenements();
+            if (!idAnimaux.isEmpty()) {
+                animauxService.rentrerToutLesAnimauxSauf(idEspece, idAnimaux);
+                /*
+                 * création d'un évenement pour chaque animal qui est resté dehors
+                 * et prévoit une action de vérification
+                 */
+                for (String animal : idAnimaux) {
+                    Evenements evenementException = new Evenements();
                     evenementException.setPersonnel(personne);
                     evenementException.setIdEspece(animauxService.trouverEspece(animal));
                     evenementException.setIdAnimal(animal);
@@ -98,51 +106,53 @@ public class EspecesController {
                     action.setEnclos(enclosA);
                     actionsService.saveActions(action);
                 }
-            }
-            else {
+            } else {
                 animauxService.rentrerToutLesAnimaux(idEspece);
             }
             Evenements reponse = evenementsService.saveEvenements(evenement);
             return new ResponseEntity<>(reponse, HttpStatus.CREATED);
-        }catch(Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
     @PostMapping("/api/especes/sortir")
     @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
-    @ApiResponses(value = {@ApiResponse(responseCode = "201 : Created", description = "L'especes est à l'intérieur."),
-            @ApiResponse( responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide." )})
+    @ApiResponses(value = { @ApiResponse(responseCode = "201 : Created", description = "L'especes est à l'intérieur."),
+            @ApiResponse(responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide.") })
 
-
-    public ResponseEntity<Evenements> sortirEspece(@RequestBody RequeteIOEspece requeteIIO){
+    public ResponseEntity<Evenements> sortirEspece(@RequestBody RequeteIOEspece requeteIIO) {
 
         List<String> idAnimaux = requeteIIO.getIdAnimaux();
         Personnels personne = requeteIIO.getPersonne();
         String idEspece = requeteIIO.getIdEspece();
         Evenements evenement = new Evenements();
 
-            if (!idAnimaux.isEmpty()  ) {
+        if (!idAnimaux.isEmpty()) {
             String tableau = String.join(", ", idAnimaux);
-            String exception = tableau  + " toujours dedans.";
-                if (!requeteIIO.getObservations().isEmpty()) {
-                    exception = exception + " // " + requeteIIO.getObservations();}
-                evenement.setObservations(exception);
-            }else{
-                if (!requeteIIO.getObservations().isEmpty()) {
-                    evenement.setObservations(requeteIIO.getObservations());}}
+            String exception = tableau + " toujours dedans.";
+            if (!requeteIIO.getObservations().isEmpty()) {
+                exception = exception + " // " + requeteIIO.getObservations();
+            }
+            evenement.setObservations(exception);
+        } else {
+            if (!requeteIIO.getObservations().isEmpty()) {
+                evenement.setObservations(requeteIIO.getObservations());
+            }
+        }
         evenement.setIdTypeEvenement("sortie");
         evenement.setPersonnel(personne);
         evenement.setIdEspece(idEspece);
         evenement.setEnclos(especesService.trouverEnclos(idEspece));
         try {
-            if (!idAnimaux.isEmpty() ) {
-            animauxService.sortirToutLesAnimauxSauf(idEspece, idAnimaux);
+            if (!idAnimaux.isEmpty()) {
+                animauxService.sortirToutLesAnimauxSauf(idEspece, idAnimaux);
                 /*
-                 *création d'un évenement pour chaque animal qui est resté dedans
+                 * création d'un évenement pour chaque animal qui est resté dedans
                  * et prévoit une action de vérification
                  */
-                for (String animal: idAnimaux
-                ) { Evenements evenementException = new Evenements();
+                for (String animal : idAnimaux) {
+                    Evenements evenementException = new Evenements();
                     evenementException.setPersonnel(personne);
                     evenementException.setIdEspece(animauxService.trouverEspece(animal));
                     evenementException.setIdAnimal(animal);
@@ -159,26 +169,25 @@ public class EspecesController {
                     action.setEnclos(enclosA);
                     actionsService.saveActions(action);
 
-
                 }
             }
 
             else {
-                    animauxService.sortirToutLesAnimaux(idEspece);
+                animauxService.sortirToutLesAnimaux(idEspece);
 
             }
             Evenements reponse = evenementsService.saveEvenements(evenement);
             return new ResponseEntity<>(reponse, HttpStatus.CREATED);
-        }catch(Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @PostMapping("/api/especes/nourrir")
     @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
-    @ApiResponses(value = {@ApiResponse(responseCode = "201 : Created", description = "L'especes est à l'intérieur."),
-            @ApiResponse( responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide." )})
-    public ResponseEntity<Evenements> nourrirEspece(@RequestBody RequeteIOEspece requeteIOEspece){
+    @ApiResponses(value = { @ApiResponse(responseCode = "201 : Created", description = "L'especes est à l'intérieur."),
+            @ApiResponse(responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide.") })
+    public ResponseEntity<Evenements> nourrirEspece(@RequestBody RequeteIOEspece requeteIOEspece) {
         String idEspece = requeteIOEspece.getIdEspece();
         Evenements evenement = new Evenements();
         evenement.setIdTypeEvenement("nourrissage");
@@ -186,20 +195,22 @@ public class EspecesController {
         evenement.setIdEspece(idEspece);
         evenement.setEnclos(especesService.trouverEnclos(idEspece));
         if (!requeteIOEspece.getObservations().isEmpty()) {
-            evenement.setObservations(requeteIOEspece.getObservations());}
+            evenement.setObservations(requeteIOEspece.getObservations());
+        }
         try {
             Evenements reponse = evenementsService.saveEvenements(evenement);
             return new ResponseEntity<>(reponse, HttpStatus.CREATED);
 
-        }catch(Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
     @PostMapping("/api/especes/stimuler")
     @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
-    @ApiResponses(value = {@ApiResponse(responseCode = "201 : Created", description = "L'especes est à l'intérieur."),
-            @ApiResponse( responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide." )})
-    public ResponseEntity<Evenements> stimulerEspece(@RequestBody RequeteIOEspece requeteIOEspece){
+    @ApiResponses(value = { @ApiResponse(responseCode = "201 : Created", description = "L'especes est à l'intérieur."),
+            @ApiResponse(responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide.") })
+    public ResponseEntity<Evenements> stimulerEspece(@RequestBody RequeteIOEspece requeteIOEspece) {
         String idEspece = requeteIOEspece.getIdEspece();
         Evenements evenement = new Evenements();
         evenement.setIdTypeEvenement("stimulation");
@@ -207,17 +218,15 @@ public class EspecesController {
         evenement.setIdEspece(idEspece);
         evenement.setEnclos(especesService.trouverEnclos(idEspece));
         if (!requeteIOEspece.getObservations().isEmpty()) {
-            evenement.setObservations(requeteIOEspece.getObservations());}
+            evenement.setObservations(requeteIOEspece.getObservations());
+        }
         try {
             Evenements reponse = evenementsService.saveEvenements(evenement);
             return new ResponseEntity<>(reponse, HttpStatus.CREATED);
 
-        }catch(Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
-
-
 
 }

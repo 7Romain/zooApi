@@ -5,9 +5,7 @@ import fr.oz.zoo_api.security.jwt.AuthTokenFilter;
 import fr.oz.zoo_api.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -19,10 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
@@ -107,7 +102,9 @@ public class SpringSecurityConfig extends GlobalMethodSecurityConfiguration {
                 .authorizeRequests(
                         auth -> auth
                         .antMatchers("/api/**").permitAll()
-                        .anyRequest().authenticated())
+//                        .anyRequest().authenticated().antMatchers("/swagger-ui/").permitAll()
+                )
+
                 .headers(headers -> headers.frameOptions().sameOrigin())
                 .formLogin(withDefaults())
                 .build();

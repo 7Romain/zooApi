@@ -6,6 +6,8 @@ import lombok.Data;
 public class RequeteIOAnimaux {
 
     String idAnimal;
-    Personnels personne;
+//    Personnels personne;
+    String username;
     String  observations;
+
 }

@@ -20,4 +20,8 @@ public class PersonnelsService {
     public Personnels savePersonnels(Personnels personnels){
     return personnelsRepository.save(personnels);}
 
+    public Personnels getPersonnelsByUsername(String username){
+        return personnelsRepository.getPersonnelsByUsername(username);
+    }
+
 }
