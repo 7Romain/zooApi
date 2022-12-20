@@ -53,4 +53,12 @@ public class AnimauxService {
 
     public Optional<Animaux> getAnimalById(String animalId) {
         return animauxRepository.findById(animalId) ;   }
+
+    public Optional<List<Animaux>> getAnimauxByEspece(String especeId){
+        return animauxRepository.findByEspece(especeId);
+    }
+
+    public String getNomAnimal(String animalId){
+        return animauxRepository.getNomAnimal(animalId);
+    }
 }

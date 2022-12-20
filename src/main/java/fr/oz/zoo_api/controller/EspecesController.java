@@ -3,6 +3,8 @@ package fr.oz.zoo_api.controller;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import fr.oz.zoo_api.model.*;
+import fr.oz.zoo_api.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,21 +14,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.oz.zoo_api.model.Actions;
-import fr.oz.zoo_api.model.Enclos;
-import fr.oz.zoo_api.model.Especes;
-import fr.oz.zoo_api.model.Evenements;
-import fr.oz.zoo_api.model.Personnels;
-import fr.oz.zoo_api.model.RequeteIOEspece;
-import fr.oz.zoo_api.service.ActionsService;
-import fr.oz.zoo_api.service.AnimauxService;
-import fr.oz.zoo_api.service.EspecesService;
-import fr.oz.zoo_api.service.EvenementsService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
+import static java.util.stream.Collectors.toList;
+
 @RestController
 public class EspecesController {
+
 
     @Autowired
     private EspecesService especesService;
@@ -38,11 +33,14 @@ public class EspecesController {
     @Autowired
     private ActionsService actionsService;
 
+    @Autowired
+    private PersonnelsService personnelsService;
+
     @GetMapping("/api/especes")
-    @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200 : OK", description = "La liste des espèces a bien été récupérée et est retransmise dans le corps du message."),
             @ApiResponse(responseCode = "404 : Not Found", description = "Le serveur n'a pas trouvé la liste des espèces") })
+    @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
     public ResponseEntity<Iterable<Especes>> getEspeces() {
         try {
             Iterable<Especes> reponse = especesService.getEspeces();
@@ -60,26 +58,41 @@ public class EspecesController {
 
     public ResponseEntity<Evenements> rentrerEspece(@RequestBody RequeteIOEspece requeteIIO) {
 
+        String obsIo = requeteIIO.getObservations();
+        List<String> tableauNom = requeteIIO.getIdAnimaux();
+
         List<String> idAnimaux = requeteIIO.getIdAnimaux();
-        Personnels personne = requeteIIO.getPersonne();
+        tableauNom = idAnimaux.stream()
+                .map(e -> animauxService.getNomAnimal(e))
+                .collect(toList());
+
+        Personnels personne = personnelsService.getPersonnelsByUsername(requeteIIO.getUsername()).get(0) ;
         String idEspece = requeteIIO.getIdEspece();
         Evenements evenement = new Evenements();
 
         if (!idAnimaux.isEmpty()) {
-            String tableau = String.join(", ", idAnimaux);
-            String exception = tableau + " toujours dehors.";
-            if (!requeteIIO.getObservations().isEmpty()) {
-                exception = exception + " // " + requeteIIO.getObservations();
+
+            String tableau = String.join(", ", tableauNom );
+            String exception ="Tous les "+idEspece+" sont rentrés sauf " +  tableau + " qui est (sont) toujours dehors.";
+            if (!requeteIIO.getObservations().isBlank()) {
+                exception = exception + " // " + obsIo;
+                evenement.setObservations(exception);
+            }else {
+                evenement.setObservations(exception);
             }
-            evenement.setObservations(exception);
         } else {
-            if (!requeteIIO.getObservations().isEmpty()) {
-                evenement.setObservations(requeteIIO.getObservations());
+            if (obsIo.isBlank()) {
+                evenement.setObservations("Tous les "+idEspece+" sont rentrés.");
+            }else {
+                evenement.setObservations("Tous les " + idEspece + " sont rentrés." + " // " + obsIo);
             }
+
         }
         evenement.setIdEspece(idEspece);
         evenement.setIdTypeEvenement("entree");
         evenement.setPersonnel(personne);
+        evenement.setMoment(LocalDateTime.now());
+
         evenement.setEnclos(especesService.trouverEnclos(idEspece));
         try {
             if (!idAnimaux.isEmpty()) {
@@ -93,7 +106,11 @@ public class EspecesController {
                     evenementException.setPersonnel(personne);
                     evenementException.setIdEspece(animauxService.trouverEspece(animal));
                     evenementException.setIdAnimal(animal);
+                    evenementException.setEnclos(especesService.trouverEnclos(idEspece));
                     evenementException.setIdTypeEvenement("neRentrePas");
+                    evenementException.setObservations("N'est pas rentré avec les autres");
+                    evenementException.setMoment(LocalDateTime.now());
+
                     evenementsService.saveEvenements(evenementException);
                     Actions action = new Actions();
                     action.setPersonnel(personne);
@@ -123,24 +140,44 @@ public class EspecesController {
 
     public ResponseEntity<Evenements> sortirEspece(@RequestBody RequeteIOEspece requeteIIO) {
 
-        List<String> idAnimaux = requeteIIO.getIdAnimaux();
-        Personnels personne = requeteIIO.getPersonne();
-        String idEspece = requeteIIO.getIdEspece();
-        Evenements evenement = new Evenements();
+        String obsIo = requeteIIO.getObservations();
 
+
+        Personnels personne = personnelsService.getPersonnelsByUsername(requeteIIO.getUsername()).get(0);
+        String idEspece = requeteIIO.getIdEspece();
+        List<String> tableauNom = requeteIIO.getIdAnimaux();
+
+        List<String> idAnimaux = requeteIIO.getIdAnimaux();
+        tableauNom = idAnimaux.stream()
+                .map(e -> animauxService.getNomAnimal(e))
+                .collect(toList());
+        Evenements evenement = new Evenements();
+// Si il y a une liste d'animaux qui ne sont pas sortie avec les autres
         if (!idAnimaux.isEmpty()) {
-            String tableau = String.join(", ", idAnimaux);
-            String exception = tableau + " toujours dedans.";
-            if (!requeteIIO.getObservations().isEmpty()) {
-                exception = exception + " // " + requeteIIO.getObservations();
+
+            String tableau = String.join(", ", tableauNom);
+            // le message en observations sera :
+            String exception ="Tous les "+idEspece+" sont sorties sauf " +  tableau + " qui est (sont) toujours dedans.";
+            //si il y a en plus déjà une observation:
+            if (!requeteIIO.getObservations().isBlank()) {
+
+                exception = exception + " // " + obsIo;
+                evenement.setObservations(exception);
+            }else {
+                evenement.setObservations(exception);
             }
-            evenement.setObservations(exception);
+            //sinon c'est qu'il n'y a pas de liste d'animaux qui ne sont pas sortie alors si
         } else {
-            if (!requeteIIO.getObservations().isEmpty()) {
-                evenement.setObservations(requeteIIO.getObservations());
+
+            if (obsIo.isBlank()) {
+                evenement.setObservations("Tous les "+idEspece+" sont sorties.") ;
+            }else {
+                evenement.setObservations("Tous les " + idEspece + " sont sorties." + " // " + obsIo);
             }
+
         }
         evenement.setIdTypeEvenement("sortie");
+        evenement.setMoment(LocalDateTime.now());
         evenement.setPersonnel(personne);
         evenement.setIdEspece(idEspece);
         evenement.setEnclos(especesService.trouverEnclos(idEspece));
@@ -156,7 +193,10 @@ public class EspecesController {
                     evenementException.setPersonnel(personne);
                     evenementException.setIdEspece(animauxService.trouverEspece(animal));
                     evenementException.setIdAnimal(animal);
+                    evenementException.setEnclos(especesService.trouverEnclos(idEspece));
+                    evenementException.setObservations("N'est pas sorti avec les autres");
                     evenementException.setIdTypeEvenement("neSortPas");
+                    evenementException.setMoment(LocalDateTime.now());
                     evenementsService.saveEvenements(evenementException);
                     Actions action = new Actions();
                     action.setPersonnel(personne);
@@ -188,11 +228,13 @@ public class EspecesController {
     @ApiResponses(value = { @ApiResponse(responseCode = "201 : Created", description = "L'especes est à l'intérieur."),
             @ApiResponse(responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide.") })
     public ResponseEntity<Evenements> nourrirEspece(@RequestBody RequeteIOEspece requeteIOEspece) {
+
         String idEspece = requeteIOEspece.getIdEspece();
         Evenements evenement = new Evenements();
         evenement.setIdTypeEvenement("nourrissage");
-        evenement.setPersonnel(requeteIOEspece.getPersonne());
         evenement.setIdEspece(idEspece);
+        evenement.setPersonnel(personnelsService.getPersonnelsByUsername(requeteIOEspece.getUsername()).get(0));
+        evenement.setMoment(LocalDateTime.now());
         evenement.setEnclos(especesService.trouverEnclos(idEspece));
         if (!requeteIOEspece.getObservations().isEmpty()) {
             evenement.setObservations(requeteIOEspece.getObservations());
@@ -214,7 +256,8 @@ public class EspecesController {
         String idEspece = requeteIOEspece.getIdEspece();
         Evenements evenement = new Evenements();
         evenement.setIdTypeEvenement("stimulation");
-        evenement.setPersonnel(requeteIOEspece.getPersonne());
+        evenement.setPersonnel(personnelsService.getPersonnelsByUsername(requeteIOEspece.getUsername()).get(0));
+        evenement.setMoment(LocalDateTime.now());
         evenement.setIdEspece(idEspece);
         evenement.setEnclos(especesService.trouverEnclos(idEspece));
         if (!requeteIOEspece.getObservations().isEmpty()) {
@@ -229,4 +272,24 @@ public class EspecesController {
         }
     }
 
+    @PostMapping("/api/especes/soigner")
+    @ApiResponses(value = { @ApiResponse(responseCode = "201 : Created", description = "L'espece reçoit des soins."),
+            @ApiResponse(responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide.") })
+    @PreAuthorize("hasRole('VETO')")
+    public ResponseEntity<Evenements> soignerEspece(@RequestBody RequeteIOEspece requeteIOEspece) {
+        try {
+            Evenements evenement = new Evenements();
+            String idEspece = requeteIOEspece.getIdEspece();
+            evenement.setIdEspece(idEspece);
+            evenement.setObservations(requeteIOEspece.getObservations());
+            evenement.setIdTypeEvenement("soins");
+            evenement.setMoment(LocalDateTime.now());
+            evenement.setEnclos(especesService.trouverEnclos(idEspece));
+            evenement.setPersonnel(personnelsService.getPersonnelsByUsername(requeteIOEspece.getUsername()).get(0));
+            Evenements reponse = evenementsService.saveEvenements(evenement);
+            return new ResponseEntity<>(reponse, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }

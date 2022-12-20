@@ -4,6 +4,7 @@ import fr.oz.zoo_api.model.Animaux;
 import fr.oz.zoo_api.model.Evenements;
 import fr.oz.zoo_api.model.RequeteIOAnimaux;
 import fr.oz.zoo_api.service.AnimauxService;
+import fr.oz.zoo_api.service.EspecesService;
 import fr.oz.zoo_api.service.EvenementsService;
 import fr.oz.zoo_api.service.PersonnelsService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +27,9 @@ public class AnimauxController {
     private AnimauxService animauxService;
     @Autowired
     private EvenementsService evenementsService;
+
+    @Autowired
+    private EspecesService especesService;
 
     @Autowired
     private PersonnelsService personnelsService;
@@ -40,9 +45,13 @@ public class AnimauxController {
         String idEspece = animauxService.trouverEspece(idAnimal);
         Evenements evenement = new Evenements();
         evenement.setIdTypeEvenement("entree");
-        evenement.setPersonnel(personnelsService.getPersonnelsByUsername(requeteAnimal.getUsername()));
+        evenement.setPersonnel(personnelsService.getPersonnelsByUsername(requeteAnimal.getUsername()).get(0));
         evenement.setIdEspece(idEspece);
         evenement.setIdAnimal(idAnimal);
+        evenement.setObservations(requeteAnimal.getObservations());
+        evenement.setMoment(LocalDateTime.now());
+        evenement.setEnclos(especesService.trouverEnclos(idEspece));
+
         try {
            Iterable<Animaux> reponse =  animauxService.entrerAnimal(idAnimal);
              evenementsService.saveEvenements(evenement);
@@ -62,9 +71,13 @@ public class AnimauxController {
         String idEspece = animauxService.trouverEspece(idAnimal);
         Evenements evenement = new Evenements();
         evenement.setIdTypeEvenement("sortie");
-        evenement.setPersonnel(personnelsService.getPersonnelsByUsername(requeteAnimal.getUsername()));
+        evenement.setPersonnel(personnelsService.getPersonnelsByUsername(requeteAnimal.getUsername()).get(0));
         evenement.setIdEspece(idEspece);
         evenement.setIdAnimal(idAnimal);
+        evenement.setObservations(requeteAnimal.getObservations());
+        evenement.setMoment(LocalDateTime.now());
+        evenement.setEnclos(especesService.trouverEnclos(idEspece));
+
         try {
 
            Iterable<Animaux> response2 = animauxService.sortirAnimal(idAnimal);
@@ -83,10 +96,16 @@ public class AnimauxController {
     public ResponseEntity<Evenements> soignerAnimal(@RequestBody RequeteIOAnimaux requeteAnimal) {
         try {
             Evenements evenement = new Evenements();
+            String idAnimal = requeteAnimal.getIdAnimal();
+            String idEspece = animauxService.trouverEspece(idAnimal);
+            evenement.setIdEspece(idEspece);
             evenement.setIdAnimal(requeteAnimal.getIdAnimal());
             evenement.setObservations(requeteAnimal.getObservations());
             evenement.setIdTypeEvenement("soins");
             evenement.setMoment(LocalDateTime.now());
+            evenement.setEnclos(especesService.trouverEnclos(idEspece));
+            evenement.setPersonnel(personnelsService.getPersonnelsByUsername(requeteAnimal.getUsername()).get(0));
+
             Evenements reponse = evenementsService.saveEvenements(evenement);
             return new ResponseEntity<>(reponse, HttpStatus.CREATED);
         } catch (Exception e) {
@@ -114,7 +133,64 @@ public class AnimauxController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(reponse, HttpStatus.OK);
     }
+    @PostMapping("/api/animaux/stimuler")
+    @ApiResponses(value = { @ApiResponse(responseCode = "201 : Created", description = "L'animal est stimulé"),
+            @ApiResponse(responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide.") })
+    @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
+    public ResponseEntity<Evenements> stimulerAnimal(@RequestBody RequeteIOAnimaux requeteAnimal) {
+        try {
+            Evenements evenement = new Evenements();
+            String idAnimal = requeteAnimal.getIdAnimal();
+            String idEspece = animauxService.trouverEspece(idAnimal);
+            evenement.setIdEspece(idEspece);
+            evenement.setIdAnimal(requeteAnimal.getIdAnimal());
+            evenement.setObservations(requeteAnimal.getObservations());
+            evenement.setIdTypeEvenement("stimulation");
+            evenement.setMoment(LocalDateTime.now());
+            evenement.setEnclos(especesService.trouverEnclos(idEspece));
+            evenement.setPersonnel(personnelsService.getPersonnelsByUsername(requeteAnimal.getUsername()).get(0));
+            Evenements reponse = evenementsService.saveEvenements(evenement);
+            return new ResponseEntity<>(reponse, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/api/animaux/nourrir")
+    @ApiResponses(value = { @ApiResponse(responseCode = "201 : Created", description = "L'animal est nourri"),
+            @ApiResponse(responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide.") })
+    @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
+    public ResponseEntity<Evenements> nourrirAnimal(@RequestBody RequeteIOAnimaux requeteAnimal) {
+        try {
+            Evenements evenement = new Evenements();
+            String idAnimal = requeteAnimal.getIdAnimal();
+            String idEspece = animauxService.trouverEspece(idAnimal);
+            evenement.setIdEspece(idEspece);
+            evenement.setIdAnimal(requeteAnimal.getIdAnimal());
+            evenement.setObservations(requeteAnimal.getObservations());
+            evenement.setIdTypeEvenement("nourrissage");
+            evenement.setMoment(LocalDateTime.now());
+            evenement.setEnclos(especesService.trouverEnclos(idEspece));
+            evenement.setPersonnel(personnelsService.getPersonnelsByUsername(requeteAnimal.getUsername()).get(0));
+            Evenements reponse = evenementsService.saveEvenements(evenement);
+            return new ResponseEntity<>(reponse, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        }
+    }
 
 
-
+@GetMapping("api/animaux/espece/{id}")
+@ApiResponses(value = {
+        @ApiResponse(responseCode = "200 : OK", description = "Les animaux ont bien été récupérés et sont retransmise dans le corps du message."),
+        @ApiResponse(responseCode = "404 : Not Found", description = "Le serveur n'a pas trouvé d'animaux.") })
+@PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
+public ResponseEntity <Optional<List<Animaux>>>getAnimauxByEspece(@PathVariable("id") final String especeId){
+        Optional<List<Animaux>> reponse = animauxService.getAnimauxByEspece(especeId);
+if(reponse.isEmpty()) {
+    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+}
+        return new ResponseEntity<>(reponse, HttpStatus.OK);
+    }
 }

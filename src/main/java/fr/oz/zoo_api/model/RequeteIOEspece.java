@@ -7,6 +7,6 @@ public class RequeteIOEspece {
 
     String idEspece;
     List<String> idAnimaux;
-    Personnels personne;
+    String username;
     String  observations;
 }

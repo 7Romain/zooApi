@@ -2,6 +2,8 @@ package fr.oz.zoo_api.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -37,6 +39,11 @@ public class Personnels {
     @Type( type ="Fonction"  )
     @Column(columnDefinition = "profession")
     private Fonction profession;
+
+
+    @JoinColumn(name = "username")
+    @Fetch(FetchMode.JOIN)
+    private String username;
 
 
     @Override

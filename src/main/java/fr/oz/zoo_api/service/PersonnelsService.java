@@ -6,6 +6,8 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Data
 @Service
 public class PersonnelsService {
@@ -20,7 +22,7 @@ public class PersonnelsService {
     public Personnels savePersonnels(Personnels personnels){
     return personnelsRepository.save(personnels);}
 
-    public Personnels getPersonnelsByUsername(String username){
+    public List<Personnels> getPersonnelsByUsername(String username){
         return personnelsRepository.getPersonnelsByUsername(username);
     }
 

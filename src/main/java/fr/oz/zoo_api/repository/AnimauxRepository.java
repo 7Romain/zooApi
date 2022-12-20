@@ -1,6 +1,7 @@
 package fr.oz.zoo_api.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -9,6 +10,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import fr.oz.zoo_api.model.Animaux;
+
+import javax.swing.text.html.Option;
 
 @Repository
 public interface AnimauxRepository extends CrudRepository<Animaux, String> {
@@ -41,6 +44,14 @@ public interface AnimauxRepository extends CrudRepository<Animaux, String> {
         @Modifying
         @Query(value = "UPDATE animaux SET localisation = 'dehors' WHERE id_animal = ?1 RETURNING *", nativeQuery = true)
         Iterable<Animaux> sortirAnimal(String idAnimal);
+
+        @Modifying
+        @Query(value = "SELECT * FROM animaux WHERE espece = ?1", nativeQuery = true)
+        Optional<List<Animaux>>findByEspece(String especeId);
+
+
+        @Query(value = "SELECT animaux.nom FROM animaux WHERE id_animal = ?1", nativeQuery = true)
+        String getNomAnimal(String animalId);
 
 
 }
