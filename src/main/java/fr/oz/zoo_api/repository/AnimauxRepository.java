@@ -3,6 +3,7 @@ package fr.oz.zoo_api.repository;
 import java.util.List;
 import java.util.Optional;
 
+import fr.oz.zoo_api.model.Especes;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -53,5 +54,10 @@ public interface AnimauxRepository extends CrudRepository<Animaux, String> {
         @Query(value = "SELECT animaux.nom FROM animaux WHERE id_animal = ?1", nativeQuery = true)
         String getNomAnimal(String animalId);
 
-
+        @Query(value = "SELECT * FROM animaux ORDER BY id_animal ASC",  nativeQuery = true)
+        public List<Animaux>findAllOrder();
 }
+
+
+
+

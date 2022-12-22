@@ -2,6 +2,7 @@ package fr.oz.zoo_api.controller;
 
 import java.time.LocalDateTime;
 
+import fr.oz.zoo_api.model.RequeteEvenement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +24,13 @@ public class EvenementsController {
     @Autowired
     private EvenementsService evenementsService;
 
-    @PutMapping("/api/evenements/creer")
+    @PostMapping("/api/evenements/creer")
     @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
     @ApiResponses(value = { @ApiResponse(responseCode = "201 : Created", description = "L'evenement a bien été créé."),
             @ApiResponse(responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide.") })
-    public ResponseEntity<Evenements> creerEvenement(@RequestBody Evenements evenement) {
+    public ResponseEntity<Evenements> creerEvenement(@RequestBody RequeteEvenement requete) {
         try {
+            Evenements evenement = new Evenements();
             Evenements reponse = evenementsService.saveEvenements(evenement);
             return new ResponseEntity<>(reponse, HttpStatus.CREATED);
         } catch (Exception e) {
