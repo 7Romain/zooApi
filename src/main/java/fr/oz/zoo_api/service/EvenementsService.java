@@ -1,10 +1,15 @@
 package fr.oz.zoo_api.service;
 
 import fr.oz.zoo_api.model.Evenements;
+import fr.oz.zoo_api.model.EvenementsTypes;
 import fr.oz.zoo_api.repository.EvenementsRepository;
+import fr.oz.zoo_api.repository.EvenementsTypesRepository;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.List;
 
 
 @Data
@@ -13,6 +18,9 @@ public class EvenementsService {
 
     @Autowired
     private EvenementsRepository evenementsRepository;
+
+    @Autowired
+    private EvenementsTypesRepository evenementsTypesRepository;
 
     public Evenements saveEvenements(Evenements evenement) {
         return evenementsRepository.save(evenement);
@@ -38,6 +46,14 @@ public class EvenementsService {
         return evenementsRepository.findByIdAnimal(animal);
 
     }
+
+    public Iterable<EvenementsTypes> getEventList(){
+        return  evenementsTypesRepository.findAllOrder();
+    }
+
+public EvenementsTypes findNomById(String id){
+        return evenementsTypesRepository.findNomById(id);
+}
 
 
 

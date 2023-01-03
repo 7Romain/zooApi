@@ -8,7 +8,8 @@ import fr.oz.zoo_api.model.Especes;
 import fr.oz.zoo_api.repository.EspecesRepository;
 import lombok.Data;
 
-import java.util.List;
+import java.util.Optional;
+
 
 @Data
 @Service
@@ -28,6 +29,11 @@ public class EspecesService {
     }
 
 
-
+    public Optional<Iterable<Especes>> getEspecesByEnclos(String enclosId){
+        return especesRepository.findEspecesByEnclos(enclosId);
+    }
+    public Optional<Iterable<Especes>> getEspecesByEspecesId(String especeId ){
+        return especesRepository.findEspecesById(especeId);
+        }
 
 }

@@ -56,6 +56,16 @@ public interface AnimauxRepository extends CrudRepository<Animaux, String> {
 
         @Query(value = "SELECT * FROM animaux ORDER BY id_animal ASC",  nativeQuery = true)
         public List<Animaux>findAllOrder();
+//        @Modifying
+//        @Query(value = "SELECT * FROM animaux WHERE enclos = ?1", nativeQuery = true)
+//        Optional<List<Animaux>>findByEnclos(String enclosId);
+
+
+        @Query(value = "SELECT * FROM animaux INNER JOIN especes ON animaux.espece = especes.id_espece WHERE enclos = ?1", nativeQuery = true)
+        Optional<List<Animaux>>findByEnclos(String enclosId);
+
+
+
 }
 
 

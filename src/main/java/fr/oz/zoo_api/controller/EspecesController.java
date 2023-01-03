@@ -2,6 +2,7 @@ package fr.oz.zoo_api.controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import fr.oz.zoo_api.model.*;
 import fr.oz.zoo_api.service.*;
@@ -9,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -291,5 +289,34 @@ public class EspecesController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("api/especes/enclos/{id}")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200 : OK", description = "Les animaux ont bien été récupérés et sont retransmise dans le corps du message."),
+            @ApiResponse(responseCode = "404 : Not Found", description = "Le serveur n'a pas trouvé d'animaux.") })
+    @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
+    public ResponseEntity <Optional<Iterable<Especes>>>getEspeceByEnclos(@PathVariable("id") final String enclosId){
+        Optional<Iterable<Especes>> reponse = especesService.getEspecesByEnclos(enclosId);
+        if(reponse.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(reponse, HttpStatus.OK);
+    }
+
+    @GetMapping("api/espece/animaux/{id}")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200 : OK", description = "L'espece a bien  été récupérée ."),
+            @ApiResponse(responseCode = "404 : Not Found", description = "Le serveur n'a pas trouvé l'espece ou l'animal .") })
+    @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
+    public ResponseEntity <Optional<Iterable<Especes>>>getEspeceByAnimal(@PathVariable("id") final String animalId){
+        String espece = animauxService.trouverEspece(animalId);
+
+
+        Optional<Iterable<Especes>> reponse = especesService.getEspecesByEspecesId(espece);
+        if(reponse.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(reponse, HttpStatus.OK);
     }
 }

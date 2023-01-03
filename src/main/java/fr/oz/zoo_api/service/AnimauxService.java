@@ -48,7 +48,7 @@ public class AnimauxService {
 
 
     public List<Animaux> getAnimaux() {
-        return (List<Animaux>) animauxRepository.findAllOrder();
+        return  animauxRepository.findAllOrder();
     }
 
     public Optional<Animaux> getAnimalById(String animalId) {
@@ -61,4 +61,9 @@ public class AnimauxService {
     public String getNomAnimal(String animalId){
         return animauxRepository.getNomAnimal(animalId);
     }
+
+    public Optional<List<Animaux>> getAnimauxByEnclos(String enclosId){
+        return animauxRepository.findByEnclos(enclosId);
+    }
+
 }

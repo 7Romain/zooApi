@@ -10,7 +10,7 @@ public class RequeteEvenement {
    private String id_personnel;
 
 
-        private Enclos id_enclos;
+        private String id_enclos;
 
 
         private String id_espece;

@@ -1,6 +1,7 @@
 package fr.oz.zoo_api.controller;
 
 import fr.oz.zoo_api.model.Animaux;
+import fr.oz.zoo_api.model.Especes;
 import fr.oz.zoo_api.model.Evenements;
 import fr.oz.zoo_api.model.RequeteIOAnimaux;
 import fr.oz.zoo_api.service.AnimauxService;
@@ -193,4 +194,21 @@ if(reponse.isEmpty()) {
 }
         return new ResponseEntity<>(reponse, HttpStatus.OK);
     }
+
+@GetMapping("api/animaux/enclos/{id}")
+@ApiResponses(value = {
+        @ApiResponse(responseCode = "200 : OK", description = "Les animaux ont bien été récupérés et sont retransmise dans le corps du message."),
+        @ApiResponse(responseCode = "404 : Not Found", description = "Le serveur n'a pas trouvé d'animaux.") })
+@PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
+public ResponseEntity <Optional<List<Animaux>>>getAnimauxByEnclos(@PathVariable("id") final String enclosId){
+        Optional<List<Animaux>> reponse = animauxService.getAnimauxByEnclos(enclosId);
+if(reponse.isEmpty()) {
+    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+}
+        return new ResponseEntity<>(reponse, HttpStatus.OK);
+    }
+
+
+
+
 }
