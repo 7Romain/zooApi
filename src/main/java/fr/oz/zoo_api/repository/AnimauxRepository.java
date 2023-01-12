@@ -3,7 +3,6 @@ package fr.oz.zoo_api.repository;
 import java.util.List;
 import java.util.Optional;
 
-import fr.oz.zoo_api.model.Especes;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -11,8 +10,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import fr.oz.zoo_api.model.Animaux;
-
-import javax.swing.text.html.Option;
 
 @Repository
 public interface AnimauxRepository extends CrudRepository<Animaux, String> {
@@ -55,10 +52,8 @@ public interface AnimauxRepository extends CrudRepository<Animaux, String> {
         String getNomAnimal(String animalId);
 
         @Query(value = "SELECT * FROM animaux ORDER BY id_animal ASC",  nativeQuery = true)
-        public List<Animaux>findAllOrder();
-//        @Modifying
-//        @Query(value = "SELECT * FROM animaux WHERE enclos = ?1", nativeQuery = true)
-//        Optional<List<Animaux>>findByEnclos(String enclosId);
+         List<Animaux>findAllOrder();
+
 
 
         @Query(value = "SELECT * FROM animaux INNER JOIN especes ON animaux.espece = especes.id_espece WHERE enclos = ?1", nativeQuery = true)

@@ -1,7 +1,6 @@
 package fr.oz.zoo_api.controller;
 
 import fr.oz.zoo_api.model.Animaux;
-import fr.oz.zoo_api.model.Especes;
 import fr.oz.zoo_api.model.Evenements;
 import fr.oz.zoo_api.model.RequeteIOAnimaux;
 import fr.oz.zoo_api.service.AnimauxService;
@@ -16,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

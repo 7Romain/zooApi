@@ -26,6 +26,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
@@ -43,6 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 @Validated
 public class AuthController {
+    private static final String ERREUR_MESSAGE = "Erreur, rôle introuvable.";
     @Autowired
     AuthenticationManager authenticationManager;
 
@@ -71,7 +73,7 @@ public class AuthController {
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
         List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
+                .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
@@ -101,27 +103,26 @@ public class AuthController {
 
         if (strRoles == null) {
             Role userRole = roleRepository.findByName(ERole.ROLE_SOIGNEUR)
-                    .orElseThrow(() -> new RuntimeException("Erreur, rôle introuvable."));
+                    .orElseThrow(() -> new RuntimeException(ERREUR_MESSAGE));
             roles.add(userRole);
         } else {
             strRoles.forEach(role -> {
                 switch (role) {
-                    case "veto":
+                    case "veto" -> {
                         Role adminRole = roleRepository.findByName(ERole.ROLE_VETO)
-                                .orElseThrow(() -> new RuntimeException("Erreur, rôle introuvable."));
+                                .orElseThrow(() -> new RuntimeException(ERREUR_MESSAGE));
                         roles.add(adminRole);
-
-                        break;
-                    case "responsable":
+                    }
+                    case "responsable" -> {
                         Role modRole = roleRepository.findByName(ERole.ROLE_RESPONSABLE)
-                                .orElseThrow(() -> new RuntimeException("Erreur, rôle introuvable."));
+                                .orElseThrow(() -> new RuntimeException(ERREUR_MESSAGE));
                         roles.add(modRole);
-
-                        break;
-                    default:
+                    }
+                    default -> {
                         Role userRole = roleRepository.findByName(ERole.ROLE_SOIGNEUR)
-                                .orElseThrow(() -> new RuntimeException("Erreur, rôle introuvable."));
+                                .orElseThrow(() -> new RuntimeException(ERREUR_MESSAGE));
                         roles.add(userRole);
+                    }
                 }
             });
         }

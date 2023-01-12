@@ -21,6 +21,7 @@ import static java.util.stream.Collectors.toList;
 public class EspecesController {
 
 
+    private static final String TOUS = "Tous les" ;
     @Autowired
     private EspecesService especesService;
     @Autowired
@@ -57,7 +58,7 @@ public class EspecesController {
     public ResponseEntity<Evenements> rentrerEspece(@RequestBody RequeteIOEspece requeteIIO) {
 
         String obsIo = requeteIIO.getObservations();
-        List<String> tableauNom = requeteIIO.getIdAnimaux();
+        List<String> tableauNom;
 
         List<String> idAnimaux = requeteIIO.getIdAnimaux();
         tableauNom = idAnimaux.stream()
@@ -71,7 +72,7 @@ public class EspecesController {
         if (!idAnimaux.isEmpty()) {
 
             String tableau = String.join(", ", tableauNom );
-            String exception ="Tous les "+idEspece+" sont rentrés sauf " +  tableau + " qui est (sont) toujours dehors.";
+            String exception =TOUS +idEspece+" sont rentrés sauf " +  tableau + " qui est (sont) toujours dehors.";
             if (!requeteIIO.getObservations().isBlank()) {
                 exception = exception + " // " + obsIo;
                 evenement.setObservations(exception);
@@ -80,9 +81,9 @@ public class EspecesController {
             }
         } else {
             if (obsIo.isBlank()) {
-                evenement.setObservations("Tous les "+idEspece+" sont rentrés.");
+                evenement.setObservations(TOUS +idEspece+" sont rentrés.");
             }else {
-                evenement.setObservations("Tous les " + idEspece + " sont rentrés." + " // " + obsIo);
+                evenement.setObservations(TOUS  + idEspece + " sont rentrés." + " // " + obsIo);
             }
 
         }
@@ -143,20 +144,20 @@ public class EspecesController {
 
         Personnels personne = personnelsService.getPersonnelsByUsername(requeteIIO.getUsername()).get(0);
         String idEspece = requeteIIO.getIdEspece();
-        List<String> tableauNom = requeteIIO.getIdAnimaux();
+        List<String> tableauNom;
 
         List<String> idAnimaux = requeteIIO.getIdAnimaux();
         tableauNom = idAnimaux.stream()
                 .map(e -> animauxService.getNomAnimal(e))
                 .collect(toList());
         Evenements evenement = new Evenements();
-// Si il y a une liste d'animaux qui ne sont pas sortie avec les autres
+// S'il y a une liste d'animaux qui ne sont pas sortie avec les autres
         if (!idAnimaux.isEmpty()) {
 
             String tableau = String.join(", ", tableauNom);
             // le message en observations sera :
-            String exception ="Tous les "+idEspece+" sont sorties sauf " +  tableau + " qui est (sont) toujours dedans.";
-            //si il y a en plus déjà une observation:
+            String exception =TOUS +idEspece+" sont sorties sauf " +  tableau + " qui est (sont) toujours dedans.";
+            //s'il y a en plus déjà une observation :
             if (!requeteIIO.getObservations().isBlank()) {
 
                 exception = exception + " // " + obsIo;
@@ -168,9 +169,9 @@ public class EspecesController {
         } else {
 
             if (obsIo.isBlank()) {
-                evenement.setObservations("Tous les "+idEspece+" sont sorties.") ;
+                evenement.setObservations(TOUS +idEspece+" sont sorties.") ;
             }else {
-                evenement.setObservations("Tous les " + idEspece + " sont sorties." + " // " + obsIo);
+                evenement.setObservations(TOUS  + idEspece + " sont sorties." + " // " + obsIo);
             }
 
         }

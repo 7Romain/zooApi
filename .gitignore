@@ -32,7 +32,4 @@ build/
 ### VS Code ###
 .vscode/
 
-### Vieille save de la BDD ###
-src/main/resources/ZOOTYCOONBDD.tar
-src/main/resources/bddZoo.sql
-src/main/resources/bddpostgre
+

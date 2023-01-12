@@ -1,8 +1,6 @@
 package fr.oz.zoo_api.controller;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
 
 import fr.oz.zoo_api.model.EvenementsTypes;
 import fr.oz.zoo_api.model.RequeteEvenement;
@@ -15,7 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -64,7 +61,6 @@ public class EvenementsController {
         evenement.setIdTypeEvenement(typeEvenement);
         evenement.setPersonnel(personnelsService.getPersonnelsByUsername(personnel).get(0));
         evenement.setMoment(LocalDateTime.now());
-        System.out.println(evenement);
         try {
 
 
@@ -172,15 +168,7 @@ public class EvenementsController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-//    @GetMapping("/api/evenements/types/nom/{id}")
-//    @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200 : OK", description = "Le nom de l'evenement a bien été récupéré."),
-//            @ApiResponse(responseCode = "404 : Not Found", description = "Le serveur n'a pas trouvé le nom de l'évènement demandé") })
-//    public EvenementsTypes getNomType(@PathVariable("id") final String id) {
-//          return evenementsService.findNomById(id);
-//
-//    }
+
     @GetMapping("/api/evenements/types/nom/{id}")
     @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
     @ApiResponses(value = {

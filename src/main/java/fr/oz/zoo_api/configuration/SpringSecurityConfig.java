@@ -48,27 +48,13 @@ public class SpringSecurityConfig extends GlobalMethodSecurityConfiguration {
     }
 
 
-//    @Bean
-//    EmbeddedDatabase dataSource(){
-//        return new EmbeddedDatabaseBuilder()
-//                .setType(EmbeddedDatabaseType.H2)
-//                .setName("dashboard")
-//                .addScript(JdbcDaoImpl.DEFAULT_USER_SCHEMA_DDL_LOCATION)
-//                .build();
-//
-//    }
+
 
     @Bean
     JdbcUserDetailsManager users(DataSource dataSource, PasswordEncoder encoder){
-//        UserDetails admin = User.builder()
-//                .username("admin")
-//                .password(encoder.encode("pass"))
-//                .roles("ADMIN")
-//                .build();
 
-        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
-//        jdbcUserDetailsManager.createUser(admin);
-        return jdbcUserDetailsManager;
+
+        return new JdbcUserDetailsManager(dataSource);
     }
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {

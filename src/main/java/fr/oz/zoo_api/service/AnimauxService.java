@@ -16,20 +16,20 @@ public class AnimauxService {
     @Autowired
     private AnimauxRepository animauxRepository;
 
-    public Iterable<Animaux> rentrerToutLesAnimauxSauf(String idEspece, List<String> idAnimaux) {
-        return animauxRepository.rentrerToutLesAnimauxSauf(idEspece, idAnimaux);
+    public void rentrerToutLesAnimauxSauf(String idEspece, List<String> idAnimaux) {
+        animauxRepository.rentrerToutLesAnimauxSauf(idEspece, idAnimaux);
     }
 
-    public Iterable<Animaux> sortirToutLesAnimauxSauf(String idEspece, List<String> idAnimaux) {
-        return animauxRepository.sortirToutLesAnimauxSauf(idEspece, idAnimaux);
+    public void sortirToutLesAnimauxSauf(String idEspece, List<String> idAnimaux) {
+        animauxRepository.sortirToutLesAnimauxSauf(idEspece, idAnimaux);
     }
 
-    public Iterable<Animaux> rentrerToutLesAnimaux(String idEspece) {
-        return animauxRepository.rentrerToutLesAnimaux(idEspece);
+    public void rentrerToutLesAnimaux(String idEspece) {
+        animauxRepository.rentrerToutLesAnimaux(idEspece);
     }
 
-    public Iterable<Animaux> sortirToutLesAnimaux(String idEspece) {
-        return animauxRepository.sortirToutLesAnimaux(idEspece);
+    public void sortirToutLesAnimaux(String idEspece) {
+        animauxRepository.sortirToutLesAnimaux(idEspece);
     }
 
     public String trouverEspece(String idAnimal) {

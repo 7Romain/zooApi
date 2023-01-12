@@ -21,7 +21,7 @@ public class EnclosService {
     private ZonesRepository zonesRepository;
 
     public List<Enclos>getEnclos(){
-        return (List<Enclos>) enclosRepository.findAllOrder();
+        return enclosRepository.findAllOrder();
     }
 
     public Enclos trouverEnclosById(String enclosId ){return enclosRepository.trouverEnclosById(enclosId);}

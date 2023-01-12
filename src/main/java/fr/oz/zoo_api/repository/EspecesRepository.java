@@ -14,14 +14,14 @@ import java.util.Optional;
 public interface EspecesRepository extends CrudRepository<Especes, String> {
 
     @Query(value = "SELECT enclos FROM Especes specie INNER JOIN specie.enclos enclos WHERE specie.id = ?1")
-    public Enclos trouverEnclos(String idEspece);
+     Enclos trouverEnclos(String idEspece);
 
     @Query(value = "SELECT * FROM public.especes ORDER BY id_espece ASC",  nativeQuery = true)
-public List<Especes>findAllOrder();
+ List<Especes>findAllOrder();
 
     @Query(value = "SELECT * FROM public.especes WHERE enclos =?1",  nativeQuery = true)
 
-    public Optional<Iterable<Especes>> findEspecesByEnclos(String especeId);
+     Optional<Iterable<Especes>> findEspecesByEnclos(String especeId);
 
-    public Optional<Iterable<Especes>>findEspecesById(String id);
+     Optional<Iterable<Especes>>findEspecesById(String id);
 }

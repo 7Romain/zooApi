@@ -28,15 +28,12 @@ class ZooApiApplicationTests {
 	@Autowired
 	EspecesRepository especesRepository;
 
-	@Test
-	void contextLoads() {
-	}
+
 
 	/**
-	 * *Test si la connection à la base fonctionne
+	 * *Test la connection à la base de données
 	 * pas besoin d'être log
-	 * 
-	 * @throws IOException
+	 *
 	 */
 	@Test
 	@DisplayName("Test la connection à la base de données")
@@ -85,21 +82,6 @@ class ZooApiApplicationTests {
 		con.disconnect();
 
 	}
-	// @Test
-	// @WithMockUser
-	// void testAuthentifSoigneur() throws IOException {
 
-	// URL url = new URL("http://localhost:9003/api/auth/signin");
-	// HttpURLConnection con = (HttpURLConnection) url.openConnection();
-	// con.setRequestMethod("POST");
-	// con.setRequestProperty("Content-Type", "application/json");
-	// con.connect();
-	// int status = con.getResponseCode();
-
-	// int expected = 401;
-	// assertEquals(expected, status);
-	// con.disconnect();
-
-	// }
 
 }

@@ -36,16 +36,16 @@ public class Enclos {
 
     private String coordonnees;
 
-    @Column(name = "temperature_air", nullable = true)
+    @Column(name = "temperature_air")
     private Integer temperatureAir;
 
     private Integer hygrometrie;
 
 
-    @Column(name = "temperature_bassin_mini",nullable = true)
+    @Column(name = "temperature_bassin_mini")
     private Integer temperatureBassinMini;
 
-    @Column(name = "temperature_bassin_maxi",nullable = true)
+    @Column(name = "temperature_bassin_maxi")
     private Integer temperatureBassinMaxi;
 
 

@@ -9,12 +9,12 @@ import fr.oz.zoo_api.service.EvenementsService;
 import fr.oz.zoo_api.service.PersonnelsService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.owasp.encoder.Encode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -99,17 +99,9 @@ public ResponseEntity<Iterable<Enclos>> getEnclos(){
             @ApiResponse(responseCode = "200 : OK", description = "Les zones ont bien été récupérés et sont retransmise dans le corps du message."),
             @ApiResponse(responseCode = "404 : Not Found", description = "Le serveur n'a pas trouvé de zone.") })
     @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
-//    public ResponseEntity <Optional<Iterable<Zones>>>getZones(){
-//        Optional<Iterable<Zones>> reponse = enclosService.getZones();
-//        if(reponse.isEmpty()) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//        return new ResponseEntity<>(reponse, HttpStatus.OK);
-//    }
+
     public Iterable<Zones>getZones(){
         return enclosService.getZones();
-
-
 
     }
 
@@ -119,7 +111,8 @@ public ResponseEntity<Iterable<Enclos>> getEnclos(){
             @ApiResponse(responseCode = "404 : Not Found", description = "Le serveur n'a pas trouvé le nom.") })
     @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
     public String getNombyId(@PathVariable("id") final String idEnclos){
-        return enclosService.getNomEnclosById(idEnclos);
+
+        return enclosService.getNomEnclosById(Encode.forHtml(idEnclos));
     }
 
 
