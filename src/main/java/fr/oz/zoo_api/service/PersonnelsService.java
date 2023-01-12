@@ -26,4 +26,8 @@ public class PersonnelsService {
         return personnelsRepository.getPersonnelsByUsername(username);
     }
 
+    public Personnels getPersonnelsById(long id){
+        return personnelsRepository.getPersonnelsByIdnum(id);
+    }
+
 }

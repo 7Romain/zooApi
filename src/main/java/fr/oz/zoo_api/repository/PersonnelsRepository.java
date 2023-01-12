@@ -2,13 +2,11 @@ package fr.oz.zoo_api.repository;
 
 
 import fr.oz.zoo_api.model.Personnels;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface PersonnelsRepository extends CrudRepository<Personnels, Long> {
@@ -20,5 +18,6 @@ public interface PersonnelsRepository extends CrudRepository<Personnels, Long> {
       List<Personnels> getPersonnelsByUsername(String username);
 
 
-
+      @Query(value =  "SELECT * FROM personnels a WHERE a.id_personnel = ?1" , nativeQuery = true)
+    Personnels getPersonnelsByIdnum(Long id);
 }

@@ -25,12 +25,16 @@ public List<Actions> getActionsByEnclos(String enclos){
 }
 
 public List<Actions> getActionsByEspece(String espece){
-    return actionsRepository.findActionsByIdEspece(espece);
+    return actionsRepository.getActionsByIdEspece(espece);
 }
 public List<Actions> getActionsByAnimal(String animal){
 
     return actionsRepository.findActionsByIdAnimal(animal);
 }
+    public Iterable<Actions> getActions(){
+        return actionsRepository.findAllAction();
+    }
+
 
 
 

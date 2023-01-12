@@ -16,11 +16,20 @@ public interface ActionsRepository extends CrudRepository<Actions, String> {
       List<Actions> findActionsByZone(String zone);
 
     @Query(
-            value = "SELECT * FROM actions a WHERE a.id_enclos = ?1" , nativeQuery = true
+            value = "SELECT * FROM actions WHERE id_enclos = ?1" , nativeQuery = true
     )
       List<Actions> getActionsByEnclos(String enclos);
 
-     List<Actions> findActionsByIdEspece(String espece);
+    @Query(
+            value = "SELECT * FROM actions WHERE id_espece = ?1" , nativeQuery = true
+    )
+     List<Actions> getActionsByIdEspece(String espece);
      List<Actions> findActionsByIdAnimal(String animal);
+
+
+     @Query(
+             value = "SELECT * FROM actions ORDER BY date_prevue DESC" , nativeQuery = true
+     )
+     List<Actions> findAllAction();
 
 }
