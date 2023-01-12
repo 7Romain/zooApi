@@ -12,7 +12,8 @@ API du projet Zoo pour la formation AFPA CDA 2022-2023 @ Beaumont
 
 
 ## 🛠️ Installation
-- besoin de monter la base de données PostGreSQL qui se trouve dans le dossier \src\main\resources
+- Besoin de monter la base de données PostGreSQL qui se trouve dans le dossier \src\main\resources .
+- Tous les utilisateurs ont pour mot de passe :  pass123  .
 
 
 
