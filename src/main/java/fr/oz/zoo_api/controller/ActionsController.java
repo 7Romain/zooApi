@@ -30,6 +30,8 @@ public class ActionsController {
     @ApiResponses(value = { @ApiResponse(responseCode = "201 : Created", description = "L'action est créée."),
             @ApiResponse(responseCode = "400 : Bad Request", description = "La syntaxe ou le contenu est invalide.") })
 //    @PreAuthorize("hasRole('SOIGNEUR') or hasRole('RESPONSABLE') or hasRole('VETO')")
+    // Description :
+    //  Creer une action
     public ResponseEntity<ReponseActions> creerActions (RequeteIOAcions requeteIOAcions){
 
         try{
